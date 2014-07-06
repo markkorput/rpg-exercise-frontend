@@ -63,8 +63,8 @@ class QuestionVisual extends Backbone.View
     @$el.append $('<span class="question"></span>')
 
     # create buttons
-    @$el.append $('<span class="yes button">&larr; &nbsp; &nbsp; Yes</span>')
-    @$el.append $('<span class="no button">No &nbsp; &nbsp; &rarr;</span>')
+    @$el.append $('<a href="#" class="yes button"><span>&larr; &nbsp; &nbsp; Yes</span></a>')
+    @$el.append $('<a href="#" class="no button"><span>No &nbsp; &nbsp; &rarr;</span></a>')
 
     # start out of screen
     @moveTo @topPosition()

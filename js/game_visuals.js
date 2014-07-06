@@ -101,8 +101,8 @@
 
     QuestionVisual.prototype.initialize = function() {
       this.$el.append($('<span class="question"></span>'));
-      this.$el.append($('<span class="yes button">&larr; &nbsp; &nbsp; Yes</span>'));
-      this.$el.append($('<span class="no button">No &nbsp; &nbsp; &rarr;</span>'));
+      this.$el.append($('<a href="#" class="yes button"><span>&larr; &nbsp; &nbsp; Yes</span></a>'));
+      this.$el.append($('<a href="#" class="no button"><span>No &nbsp; &nbsp; &rarr;</span></a>'));
       return this.moveTo(this.topPosition());
     };
 
