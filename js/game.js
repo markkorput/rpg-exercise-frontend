@@ -14,7 +14,6 @@
 
     GameView.prototype.initialize = function() {
       var games, no_func, yes_func;
-      console.log('whhuuuu');
       this.admin_view = new AdminView();
       games = new GameList;
       games.fetch();

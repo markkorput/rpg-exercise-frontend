@@ -3,7 +3,6 @@
 #
 class @GameView extends Backbone.View
   initialize: ->
-    console.log 'whhuuuu'
     # init logic
     @admin_view = new AdminView()
     games = new GameList;

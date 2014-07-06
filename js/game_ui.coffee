@@ -4,6 +4,10 @@ class @GameUi extends Backbone.Model
 
     $(window).on('keydown', @_keyDown).mousemove(@_mouseMove)
 
+    @hammer = Hammer(document)
+    @hammer.on 'swipeleft', (e) => @trigger 'answer-yes', e
+    @hammer.on 'swiperight', (e) => @trigger 'answer-no', e
+
   _keyDown: (e) =>
     # console.log('keydown event:')
     # console.log(e)

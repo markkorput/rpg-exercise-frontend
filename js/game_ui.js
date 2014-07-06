@@ -9,8 +9,16 @@
 
     function GameUi(_opts) {
       this._keyDown = __bind(this._keyDown, this);
+      var _this = this;
       this.options = _opts || {};
       $(window).on('keydown', this._keyDown).mousemove(this._mouseMove);
+      this.hammer = Hammer(document);
+      this.hammer.on('swipeleft', function(e) {
+        return _this.trigger('answer-yes', e);
+      });
+      this.hammer.on('swiperight', function(e) {
+        return _this.trigger('answer-no', e);
+      });
     }
 
     GameUi.prototype._keyDown = function(e) {
