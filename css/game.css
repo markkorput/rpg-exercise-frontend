@@ -43,3 +43,5 @@
     opacity: 0.2;
     font-size: small;
 }
+
+#explanation:hover{opacity: 1.0};
