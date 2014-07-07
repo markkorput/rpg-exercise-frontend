@@ -26,9 +26,7 @@
 
     return Answer;
 
-  })(Backbone.RelationalModel);
-
-  Answer.setup();
+  })(Backbone.Model);
 
   this.AnswerList = (function(_super) {
     __extends(AnswerList, _super);
@@ -55,26 +53,14 @@
     }
 
     Question.prototype.defaults = {
-      text: 'Question Text',
-      answers: [
-        new Answer(), new Answer({
-          text: 'No'
-        })
-      ]
+      text: 'Question Text'
     };
 
-    Question.prototype.relations = [
-      {
-        type: Backbone.HasMany,
-        key: 'answers',
-        relatedModel: 'Answer',
-        collectionType: 'AnswerList',
-        reverseRelation: {
-          type: Backbone.HasOne,
-          key: 'question'
-        }
-      }
-    ];
+    Question.prototype.answers = function() {
+      return new AnswerList(all_answers.where({
+        question_id: this.id
+      }));
+    };
 
     Question.prototype.getAnswer = function(text) {
       return this.get('answers').findWhere({
@@ -92,9 +78,7 @@
 
     return Question;
 
-  })(Backbone.RelationalModel);
-
-  Question.setup();
+  })(Backbone.Model);
 
   this.QuestionList = (function(_super) {
     __extends(QuestionList, _super);
@@ -116,65 +100,63 @@
     };
 
     QuestionList.prototype._createDefaultQuestions = function() {
-      var _this = this;
-      return _.each(this._initData, function(qData) {
-        return _this.create(qData);
+      var q;
+      console.log('creating defaults questions');
+      q = all_questions.create({
+        text: 'Should we build more schools?'
+      });
+      all_answers.create({
+        question_id: q.id,
+        text: 'Yes',
+        manipulations: {
+          'income tax': 5,
+          'education level': 3,
+          'public health': 2,
+          'entrepreneurship': 3,
+          'community art': -3,
+          'immigration': 0
+        }
+      });
+      all_answers.create({
+        question_id: q.id,
+        text: 'No',
+        manipulations: {
+          'income tax': -3,
+          'education level': -4,
+          'public health': -5,
+          'entrepreneurship': -1,
+          'community art': +4,
+          'immigration': 0
+        }
+      });
+      q = all_questions.create({
+        text: 'Should we let foreigners work in the USA?'
+      });
+      all_answers.create({
+        question_id: q.id,
+        text: 'Yes',
+        manipulations: {
+          'income tax': 5,
+          'education level': 3,
+          'public health': 2,
+          'entrepreneurship': 3,
+          'community art': -3,
+          'immigration': 0
+        }
+      });
+      return all_answers.create({
+        question_id: q.id,
+        text: 'No',
+        manipulations: {
+          'income tax': -3,
+          'education level': -4,
+          'public health': -5,
+          'entrepreneurship': -1,
+          'community art': +4,
+          'immigration': 0
+        }
       });
     };
-
-    QuestionList.prototype._initData = [
-      {
-        text: 'Should we build more schools?',
-        answers: [
-          {
-            text: 'Yes',
-            manipulations: {
-              'income tax': 5,
-              'education level': 3,
-              'public health': 2,
-              'entrepreneurship': 3,
-              'community art': -3,
-              'immigration': 0
-            }
-          }, {
-            text: 'No',
-            manipulations: {
-              'income tax': -3,
-              'education level': -4,
-              'public health': -5,
-              'entrepreneurship': -1,
-              'community art': +4,
-              'immigration': 0
-            }
-          }
-        ]
-      }, {
-        text: 'Should we let foreigners work in the USA?',
-        answers: [
-          {
-            text: 'Yes',
-            manipulations: {
-              'income tax': -3,
-              'education level': 1,
-              'public health': 1,
-              'entrepreneurship': 3,
-              'community art': 2,
-              'immigration': 5
-            }
-          }, {
-            text: 'No',
-            manipulations: {
-              'income tax': 2,
-              'education level': -1,
-              'public health': -1,
-              'entrepreneurship': -3,
-              'community art': -2,
-              'immigration': -4
-            }
-          }
-        ]
-      }
-    ];
 
     return QuestionList;
 
@@ -296,7 +278,7 @@
     };
 
     Game.prototype.initialize = function() {
-      var qList, uList;
+      var uList;
       uList = new UserList();
       if (this.get('user_id')) {
         this.user = uList.get(this.get('user_id'));
@@ -308,9 +290,7 @@
         });
       }
       this.submissions = new SubmissionList();
-      qList = new QuestionList();
-      this.questions = new QuestionList();
-      return this.questions.fetchOrInit();
+      return this.questions = all_questions;
     };
 
     Game.prototype.current_question = function() {
@@ -373,5 +353,13 @@
     return GameList;
 
   })(Backbone.Collection);
+
+  window.all_questions = new QuestionList();
+
+  window.all_questions.fetch();
+
+  window.all_answers = new AnswerList();
+
+  window.all_answers.fetch();
 
 }).call(this);

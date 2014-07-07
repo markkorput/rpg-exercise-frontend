@@ -1,7 +1,7 @@
 #
 # Question
 #
-class @Answer extends Backbone.RelationalModel
+class @Answer extends Backbone.Model
   defaults:
     text: 'Yes'
     manipulations:
@@ -12,43 +12,22 @@ class @Answer extends Backbone.RelationalModel
       'community art': 0
       'immigration': 0
 
-Answer.setup()
-
 class @AnswerList extends Backbone.Collection
   model: Answer
   localStorage: new Backbone.LocalStorage("rpg-backbone-storage-answers")
 
 
-class @Question extends Backbone.RelationalModel
+class @Question extends Backbone.Model
   defaults:
     text: 'Question Text'
-    answers: [
-      new Answer()
-      new Answer(text: 'No')
-    ]
 
-  relations: [
-    {
-      type: Backbone.HasMany,
-      key: 'answers',
-      relatedModel: 'Answer',
-      collectionType: 'AnswerList'
-      reverseRelation: {
-        type: Backbone.HasOne,
-        key: 'question'
-      }
-    }
-  ]
+  answers: -> new AnswerList(all_answers.where(question_id: @id))
 
   getAnswer: (text) ->
     @get('answers').findWhere(text: text)
 
   yAnswer: ->@getAnswer('Yes')
   nAnswer: -> @getAnswer('No')
-
-# needed for backbone-relationships because coffeescript handles inheritance a bit different
-Question.setup()
-
 
 class @QuestionList extends Backbone.Collection
   model: Question
@@ -59,59 +38,50 @@ class @QuestionList extends Backbone.Collection
     @_createDefaultQuestions() if @length == 0
 
   _createDefaultQuestions: ->
-    _.each @_initData, (qData) =>
-      @create(qData)
+    console.log 'creating defaults questions'
+    q = all_questions.create(text: 'Should we build more schools?')
+    all_answers.create
+      question_id: q.id
+      text: 'Yes'
+      manipulations:
+        'income tax': 5
+        'education level': 3
+        'public health': 2
+        'entrepreneurship': 3
+        'community art': -3
+        'immigration': 0
+    all_answers.create
+      question_id: q.id
+      text: 'No'
+      manipulations:
+        'income tax': -3
+        'education level': -4
+        'public health': -5
+        'entrepreneurship': -1
+        'community art': +4
+        'immigration': 0
 
-  _initData: [
-    {
-      text: 'Should we build more schools?'
-      answers: [
-        {
-          text: 'Yes'
-          manipulations:
-            'income tax': 5
-            'education level': 3
-            'public health': 2
-            'entrepreneurship': 3
-            'community art': -3
-            'immigration': 0
-        },{
-          text: 'No'
-          manipulations:
-            'income tax': -3
-            'education level': -4
-            'public health': -5
-            'entrepreneurship': -1
-            'community art': +4
-            'immigration': 0
-        }
-      ]
-    },
-    {
-      text: 'Should we let foreigners work in the USA?'
-      answers: [
-        {
-          text: 'Yes'
-          manipulations:
-            'income tax': -3
-            'education level': 1
-            'public health': 1
-            'entrepreneurship': 3
-            'community art': 2
-            'immigration': 5
-        },{
-          text: 'No'
-          manipulations:
-            'income tax': 2
-            'education level': -1
-            'public health': -1
-            'entrepreneurship': -3
-            'community art': -2
-            'immigration': -4
-        }
-      ]
-    }
-  ]
+    q = all_questions.create(text: 'Should we let foreigners work in the USA?')
+    all_answers.create
+      question_id: q.id
+      text: 'Yes'
+      manipulations:
+        'income tax': 5
+        'education level': 3
+        'public health': 2
+        'entrepreneurship': 3
+        'community art': -3
+        'immigration': 0
+    all_answers.create
+      question_id: q.id
+      text: 'No'
+      manipulations:
+        'income tax': -3
+        'education level': -4
+        'public health': -5
+        'entrepreneurship': -1
+        'community art': +4
+        'immigration': 0
 
 
 class @User extends Backbone.Model
@@ -160,9 +130,7 @@ class @Game extends Backbone.Model
       @set(user_id: @user.id)
 
     @submissions = new SubmissionList()
-    qList = new QuestionList()
-    @questions = new QuestionList()
-    @questions.fetchOrInit()
+    @questions = all_questions
 
   # returns the current question object
   current_question: ->
@@ -199,4 +167,8 @@ class @GameList extends Backbone.Collection
   model: Game
   localStorage: new Backbone.LocalStorage("rpg-backbone-storage-games")
 
-    
+window.all_questions = new QuestionList()
+window.all_questions.fetch()
+
+window.all_answers = new AnswerList()
+window.all_answers.fetch()

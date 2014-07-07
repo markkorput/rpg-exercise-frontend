@@ -45,12 +45,14 @@ class @GameView extends Backbone.View
       @game.save()
       # console.log @game.user
       @game.user.save()
+
+    all_questions.fetchOrInit()
     @game.nextQuestion()
 
   # helpers
   game_el: -> @$el.find('#current-question')
   stats_el: -> @$el.find('#game-stats')
-  getAnswer: (txt) -> @game.current_question().get('answers').findWhere({text: txt})
+  getAnswer: (txt) -> @game.current_question().answers().findWhere({text: txt})
   getCurrentState: -> new Backbone.Model number_of_answers: @game.submissions.length, skills : @game.user.skillsClone()
 
   # renderers
@@ -65,7 +67,7 @@ class @GameView extends Backbone.View
 
     if q = @game.current_question()
       @game_el().append('<h2>'+q.get('text')+'</h2>')
-      q.get('answers').each (answer) =>
+      q.answers().each (answer) =>
         button = $('<button>'+answer.get('text')+'</button>')
         button.on 'click', (event) =>
           @trigger('answer', answer)

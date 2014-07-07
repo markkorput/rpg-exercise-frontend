@@ -20,7 +20,7 @@
         model: this.game_list
       });
       this.question_list = new QuestionList();
-      this.question_list.fetch();
+      this.question_list.fetchOrInit();
       this.questions_index_view = new QuestionsIndexView({
         model: this.question_list
       });
@@ -173,7 +173,7 @@
     };
 
     QuestionView.prototype.takeValues = function(e) {
-      var nManipulations, yManipulations;
+      var answer, nManipulations, yManipulations;
       if (e) {
         e.preventDefault();
       }
@@ -182,24 +182,25 @@
       });
       this.model.save();
       yManipulations = this.model.yAnswer().get('manipulations');
-      yManipulations['income tax'] = this.$el.find('#answer-yes-skill1');
-      yManipulations['education level'] = this.$el.find('#answer-yes-skill2');
-      yManipulations['public health'] = this.$el.find('#answer-yes-skill3');
-      yManipulations['entrepreneurship'] = this.$el.find('#answer-yes-skill4');
-      yManipulations['community art'] = this.$el.find('#answer-yes-skill5');
-      yManipulations['immigration'] = this.$el.find('#answer-yes-skill6');
-      this.model.yAnswer().set({
+      yManipulations['income tax'] = this.$el.find('#answer-yes-skill1').val();
+      yManipulations['education level'] = this.$el.find('#answer-yes-skill2').val();
+      yManipulations['public health'] = this.$el.find('#answer-yes-skill3').val();
+      yManipulations['entrepreneurship'] = this.$el.find('#answer-yes-skill4').val();
+      yManipulations['community art'] = this.$el.find('#answer-yes-skill5').val();
+      yManipulations['immigration'] = this.$el.find('#answer-yes-skill6').val();
+      answer = this.model.yAnswer();
+      answer.set({
         manipulations: yManipulations
       });
       this.model.yAnswer().save();
       nManipulations = this.model.nAnswer().get('manipulations');
-      nManipulations['income tax'] = this.$el.find('#answer-no-skill1');
-      nManipulations['education level'] = this.$el.find('#answer-no-skill2');
-      nManipulations['public health'] = this.$el.find('#answer-no-skill3');
-      nManipulations['entrepreneurship'] = this.$el.find('#answer-no-skill4');
-      nManipulations['community art'] = this.$el.find('#answer-no-skill5');
-      nManipulations['immigration'] = this.$el.find('#answer-no-skill6');
-      this.model.nAnswer().get({
+      nManipulations['income tax'] = this.$el.find('#answer-no-skill1').val();
+      nManipulations['education level'] = this.$el.find('#answer-no-skill2').val();
+      nManipulations['public health'] = this.$el.find('#answer-no-skill3').val();
+      nManipulations['entrepreneurship'] = this.$el.find('#answer-no-skill4').val();
+      nManipulations['community art'] = this.$el.find('#answer-no-skill5').val();
+      nManipulations['immigration'] = this.$el.find('#answer-no-skill6').val();
+      this.model.nAnswer().set({
         manipulations: nManipulations
       });
       this.model.nAnswer().save();
@@ -319,7 +320,6 @@
     };
 
     GameView.prototype.render = function() {
-      console.log(this.model);
       this.$el.html('');
       this.$el.append('Creation date: ' + this.model.get('created_at') + '<br/>');
       this.$el.append('User id: ' + this.model.get('user_id') + '<br/>');
@@ -356,7 +356,6 @@
       if (!this.model) {
         return;
       }
-      console.log(this.model.attributes);
       this.$el.append('Name: ' + this.model.get('name') + '<br/>');
       return this.$el.append('Skills: ' + this.model.get('skillSummary'));
     };

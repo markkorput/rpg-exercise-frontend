@@ -2,13 +2,10 @@ class @AdminView extends Backbone.View
   initialize: ->
     @game_list = new GameList()
     @game_list.fetch()
-    # @game_list.each (g) -> g.destroy()
-    # console.log @game_list.length
-    # return
     @games_index_view = new GamesIndexView(model: @game_list)
 
     @question_list = new QuestionList()
-    @question_list.fetch()
+    @question_list.fetchOrInit()
     @questions_index_view = new QuestionsIndexView(model: @question_list)
 
     @render()
@@ -111,28 +108,29 @@ class QuestionView extends Backbone.View
     @model.save()
 
     yManipulations = @model.yAnswer().get('manipulations')
-    
-    yManipulations['income tax'] = @$el.find('#answer-yes-skill1')
-    yManipulations['education level'] = @$el.find('#answer-yes-skill2')
-    yManipulations['public health'] = @$el.find('#answer-yes-skill3')
-    yManipulations['entrepreneurship'] = @$el.find('#answer-yes-skill4')
-    yManipulations['community art'] = @$el.find('#answer-yes-skill5')
-    yManipulations['immigration'] = @$el.find('#answer-yes-skill6')
+    yManipulations['income tax'] = @$el.find('#answer-yes-skill1').val()
+    yManipulations['education level'] = @$el.find('#answer-yes-skill2').val()
+    yManipulations['public health'] = @$el.find('#answer-yes-skill3').val()
+    yManipulations['entrepreneurship'] = @$el.find('#answer-yes-skill4').val()
+    yManipulations['community art'] = @$el.find('#answer-yes-skill5').val()
+    yManipulations['immigration'] = @$el.find('#answer-yes-skill6').val()
 
-    @model.yAnswer().set(manipulations: yManipulations)
+    answer = @model.yAnswer()
+    answer.set(manipulations: yManipulations)
     @model.yAnswer().save()
 
     nManipulations = @model.nAnswer().get('manipulations')
-    nManipulations['income tax'] = @$el.find('#answer-no-skill1')
-    nManipulations['education level'] = @$el.find('#answer-no-skill2')
-    nManipulations['public health'] = @$el.find('#answer-no-skill3')
-    nManipulations['entrepreneurship'] = @$el.find('#answer-no-skill4')
-    nManipulations['community art'] = @$el.find('#answer-no-skill5')
-    nManipulations['immigration'] = @$el.find('#answer-no-skill6')
-    
-    @model.nAnswer().get(manipulations: nManipulations)
+
+
+    nManipulations['income tax'] = @$el.find('#answer-no-skill1').val()
+    nManipulations['education level'] = @$el.find('#answer-no-skill2').val()
+    nManipulations['public health'] = @$el.find('#answer-no-skill3').val()
+    nManipulations['entrepreneurship'] = @$el.find('#answer-no-skill4').val()
+    nManipulations['community art'] = @$el.find('#answer-no-skill5').val()
+    nManipulations['immigration'] = @$el.find('#answer-no-skill6').val()
+
+    @model.nAnswer().set(manipulations: nManipulations)
     @model.nAnswer().save()
-    
     @trigger 'close'
 
 
@@ -199,7 +197,6 @@ class GameView extends Backbone.View
     @model.on 'destroy', (-> @remove(); @trigger('close')), this
 
   render: ->
-    console.log @model
     @$el.html ''
     @$el.append 'Creation date: '+@model.get('created_at') + '<br/>'
     @$el.append 'User id: '+@model.get('user_id') + '<br/>'
@@ -219,7 +216,6 @@ class UserView extends Backbone.View
   render: ->
     @$el.html ''
     return if !@model
-    console.log @model.attributes
     @$el.append 'Name: '+@model.get('name')+'<br/>'
     @$el.append 'Skills: '+@model.get('skillSummary')
 

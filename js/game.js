@@ -60,6 +60,7 @@
         _this.game.save();
         return _this.game.user.save();
       });
+      all_questions.fetchOrInit();
       return this.game.nextQuestion();
     };
 
@@ -72,7 +73,7 @@
     };
 
     GameView.prototype.getAnswer = function(txt) {
-      return this.game.current_question().get('answers').findWhere({
+      return this.game.current_question().answers().findWhere({
         text: txt
       });
     };
@@ -97,7 +98,7 @@
       this.game_el().html('');
       if (q = this.game.current_question()) {
         this.game_el().append('<h2>' + q.get('text') + '</h2>');
-        return q.get('answers').each(function(answer) {
+        return q.answers().each(function(answer) {
           var button;
           button = $('<button>' + answer.get('text') + '</button>');
           button.on('click', function(event) {
