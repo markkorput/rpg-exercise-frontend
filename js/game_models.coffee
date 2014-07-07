@@ -83,6 +83,31 @@ class @QuestionList extends Backbone.Collection
         'community art': +4
         'immigration': 0
 
+  createEmptyQuestion: ->
+    q = all_questions.create(text: 'New Question')
+    all_answers.create
+      question_id: q.id
+      text: 'Yes'
+      manipulations:
+        'income tax': 0
+        'education level': 0
+        'public health': 0
+        'entrepreneurship': 0
+        'community art': 0
+        'immigration': 0
+    all_answers.create
+      question_id: q.id
+      text: 'No'
+      manipulations:
+        'income tax': 0
+        'education level': 0
+        'public health': 0
+        'entrepreneurship': 0
+        'community art': 0
+        'immigration': 0
+    return q
+
+
 
 class @User extends Backbone.Model
   defaults:

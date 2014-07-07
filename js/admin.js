@@ -41,7 +41,8 @@
 
     AdminView.prototype.render = function() {
       this.$el.html('<h2>Questions</h2>');
-      return this.$el.append(this.questions_index_view.el);
+      this.$el.append(this.questions_index_view.el);
+      return this.$el.append('<a href="#new-question" class="btn">New Question</a>');
     };
 
     return AdminView;
@@ -372,6 +373,7 @@
 
     AdminRouter.prototype.routes = {
       "question/:id": 'showQuestion',
+      "new-question": 'newQuestion',
       "*action": 'defaultRoute'
     };
 
@@ -393,6 +395,13 @@
         return view;
       }
       return null;
+    };
+
+    AdminRouter.prototype.newQuestion = function() {
+      var q;
+      console.log('newww');
+      q = all_questions.createEmptyQuestion();
+      return this.navigate('#/question/' + q.id);
     };
 
     AdminRouter.prototype.defaultRoute = function(action) {

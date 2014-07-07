@@ -19,6 +19,7 @@ class @AdminView extends Backbone.View
   render: ->
     @$el.html '<h2>Questions</h2>'
     @$el.append @questions_index_view.el
+    @$el.append '<a href="#new-question" class="btn">New Question</a>'
     # @$el.append '<h2>Games</h2>'
     # @$el.append  @games_index_view.el
 
@@ -225,6 +226,7 @@ class UserView extends Backbone.View
 class @AdminRouter extends Backbone.Router
   routes:
     "question/:id": 'showQuestion'
+    "new-question": 'newQuestion'
     "*action": 'defaultRoute'
   
   _adminView: -> @__adminview ||= new AdminView()
@@ -238,6 +240,12 @@ class @AdminRouter extends Backbone.Router
       return view
 
     return null
+
+  newQuestion: ->
+    console.log 'newww'
+    q = all_questions.createEmptyQuestion()
+    @navigate('#/question/'+q.id)
+
 
   defaultRoute: (action) ->
     $('#admin').html ''
