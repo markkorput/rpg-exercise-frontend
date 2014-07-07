@@ -24,7 +24,7 @@ class @Question extends Backbone.Model
   answers: -> new AnswerList(all_answers.where(question_id: @id))
 
   getAnswer: (text) ->
-    @get('answers').findWhere(text: text)
+    @answers().findWhere(text: text)
 
   yAnswer: ->@getAnswer('Yes')
   nAnswer: -> @getAnswer('No')
@@ -141,7 +141,7 @@ class @Game extends Backbone.Model
     # apply the answer's manipulation values to the current user's skills
     _.each answer.get('manipulations'), (val, key, obj) =>
       if skill = @user.skills.findWhere(text: key)
-        skill.set(score: skill.get('score') + val)
+        skill.set(score: parseInt(skill.get('score')) + parseInt(val))
 
     @submissions.add new Submission(user_cid: @user.cid, question_cid: @current_question().cid, answer_cid: answer.cid)
 
@@ -166,6 +166,7 @@ class @Game extends Backbone.Model
 class @GameList extends Backbone.Collection
   model: Game
   localStorage: new Backbone.LocalStorage("rpg-backbone-storage-games")
+
 
 window.all_questions = new QuestionList()
 window.all_questions.fetch()

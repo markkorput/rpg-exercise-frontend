@@ -19,7 +19,7 @@
       this.games_index_view = new GamesIndexView({
         model: this.game_list
       });
-      this.question_list = new QuestionList();
+      this.question_list = all_questions;
       this.question_list.fetchOrInit();
       this.questions_index_view = new QuestionsIndexView({
         model: this.question_list
@@ -41,9 +41,7 @@
 
     AdminView.prototype.render = function() {
       this.$el.html('<h2>Questions</h2>');
-      this.$el.append(this.questions_index_view.el);
-      this.$el.append('<h2>Games</h2>');
-      return this.$el.append(this.games_index_view.el);
+      return this.$el.append(this.questions_index_view.el);
     };
 
     return AdminView;
@@ -114,7 +112,7 @@
     QuestionIndexLineView.prototype.render = function() {
       this.$el.html('');
       this.$el.append('<td><a href="#/question/' + this.model.id + '" class="open">' + this.model.get('text') + '</a></td>');
-      return this.$el.append('<td><a href="#/question/' + this.model.id + '" class="delete">delete</a></td>');
+      return this.$el.append('<td><a href="#" class="delete">delete</a></td>');
     };
 
     QuestionIndexLineView.prototype.open = function(e) {
@@ -182,24 +180,24 @@
       });
       this.model.save();
       yManipulations = this.model.yAnswer().get('manipulations');
-      yManipulations['income tax'] = this.$el.find('#answer-yes-skill1').val();
-      yManipulations['education level'] = this.$el.find('#answer-yes-skill2').val();
-      yManipulations['public health'] = this.$el.find('#answer-yes-skill3').val();
-      yManipulations['entrepreneurship'] = this.$el.find('#answer-yes-skill4').val();
-      yManipulations['community art'] = this.$el.find('#answer-yes-skill5').val();
-      yManipulations['immigration'] = this.$el.find('#answer-yes-skill6').val();
+      yManipulations['income tax'] = parseInt(this.$el.find('#answer-yes-skill1').val());
+      yManipulations['education level'] = parseInt(this.$el.find('#answer-yes-skill2').val());
+      yManipulations['public health'] = parseInt(this.$el.find('#answer-yes-skill3').val());
+      yManipulations['entrepreneurship'] = parseInt(this.$el.find('#answer-yes-skill4').val());
+      yManipulations['community art'] = parseInt(this.$el.find('#answer-yes-skill5').val());
+      yManipulations['immigration'] = parseInt(this.$el.find('#answer-yes-skill6').val());
       answer = this.model.yAnswer();
       answer.set({
         manipulations: yManipulations
       });
       this.model.yAnswer().save();
       nManipulations = this.model.nAnswer().get('manipulations');
-      nManipulations['income tax'] = this.$el.find('#answer-no-skill1').val();
-      nManipulations['education level'] = this.$el.find('#answer-no-skill2').val();
-      nManipulations['public health'] = this.$el.find('#answer-no-skill3').val();
-      nManipulations['entrepreneurship'] = this.$el.find('#answer-no-skill4').val();
-      nManipulations['community art'] = this.$el.find('#answer-no-skill5').val();
-      nManipulations['immigration'] = this.$el.find('#answer-no-skill6').val();
+      nManipulations['income tax'] = parseInt(this.$el.find('#answer-no-skill1').val());
+      nManipulations['education level'] = parseInt(this.$el.find('#answer-no-skill2').val());
+      nManipulations['public health'] = parseInt(this.$el.find('#answer-no-skill3').val());
+      nManipulations['entrepreneurship'] = parseInt(this.$el.find('#answer-no-skill4').val());
+      nManipulations['community art'] = parseInt(this.$el.find('#answer-no-skill5').val());
+      nManipulations['immigration'] = parseInt(this.$el.find('#answer-no-skill6').val());
       this.model.nAnswer().set({
         manipulations: nManipulations
       });
@@ -383,7 +381,7 @@
 
     AdminRouter.prototype._questionView = function(id) {
       var list, q, view;
-      list = new QuestionList();
+      list = all_questions;
       list.fetch();
       if (q = list.get(id)) {
         view = new QuestionView({

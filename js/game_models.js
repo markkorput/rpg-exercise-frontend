@@ -63,7 +63,7 @@
     };
 
     Question.prototype.getAnswer = function(text) {
-      return this.get('answers').findWhere({
+      return this.answers().findWhere({
         text: text
       });
     };
@@ -308,7 +308,7 @@
           text: key
         })) {
           return skill.set({
-            score: skill.get('score') + val
+            score: parseInt(skill.get('score')) + parseInt(val)
           });
         }
       });

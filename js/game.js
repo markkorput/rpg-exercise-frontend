@@ -13,10 +13,9 @@
     }
 
     GameView.prototype.initialize = function() {
-      var games, no_func, yes_func,
+      var no_func, yes_func,
         _this = this;
-      games = new GameList();
-      this.game = games.create({});
+      this.game = new Game();
       this.game_states = new Backbone.Collection([this.getCurrentState()]);
       this.render();
       this.$el.hide();
@@ -56,11 +55,7 @@
       this.game.on('new-question', (function(question) {
         return this.game_visuals.showQuestion(question);
       }), this);
-      this.on('answer', function() {
-        _this.game.save();
-        return _this.game.user.save();
-      });
-      all_questions.fetchOrInit();
+      this.on('answer', function() {});
       return this.game.nextQuestion();
     };
 

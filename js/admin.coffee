@@ -4,7 +4,7 @@ class @AdminView extends Backbone.View
     @game_list.fetch()
     @games_index_view = new GamesIndexView(model: @game_list)
 
-    @question_list = new QuestionList()
+    @question_list = all_questions
     @question_list.fetchOrInit()
     @questions_index_view = new QuestionsIndexView(model: @question_list)
 
@@ -19,8 +19,8 @@ class @AdminView extends Backbone.View
   render: ->
     @$el.html '<h2>Questions</h2>'
     @$el.append @questions_index_view.el
-    @$el.append '<h2>Games</h2>'
-    @$el.append  @games_index_view.el
+    # @$el.append '<h2>Games</h2>'
+    # @$el.append  @games_index_view.el
 
 #
 # Questions views
@@ -62,7 +62,7 @@ class QuestionIndexLineView extends Backbone.View
   render: ->
     @$el.html ''
     @$el.append '<td><a href="#/question/'+@model.id+'" class="open">'+@model.get('text')+'</a></td>'
-    @$el.append '<td><a href="#/question/'+@model.id+'" class="delete">delete</a></td>'
+    @$el.append '<td><a href="#" class="delete">delete</a></td>'
     
   open: (e) ->
     # e.preventDefault()
@@ -108,12 +108,12 @@ class QuestionView extends Backbone.View
     @model.save()
 
     yManipulations = @model.yAnswer().get('manipulations')
-    yManipulations['income tax'] = @$el.find('#answer-yes-skill1').val()
-    yManipulations['education level'] = @$el.find('#answer-yes-skill2').val()
-    yManipulations['public health'] = @$el.find('#answer-yes-skill3').val()
-    yManipulations['entrepreneurship'] = @$el.find('#answer-yes-skill4').val()
-    yManipulations['community art'] = @$el.find('#answer-yes-skill5').val()
-    yManipulations['immigration'] = @$el.find('#answer-yes-skill6').val()
+    yManipulations['income tax'] = parseInt @$el.find('#answer-yes-skill1').val()
+    yManipulations['education level'] = parseInt @$el.find('#answer-yes-skill2').val()
+    yManipulations['public health'] = parseInt @$el.find('#answer-yes-skill3').val()
+    yManipulations['entrepreneurship'] = parseInt @$el.find('#answer-yes-skill4').val()
+    yManipulations['community art'] = parseInt @$el.find('#answer-yes-skill5').val()
+    yManipulations['immigration'] = parseInt @$el.find('#answer-yes-skill6').val()
 
     answer = @model.yAnswer()
     answer.set(manipulations: yManipulations)
@@ -122,12 +122,12 @@ class QuestionView extends Backbone.View
     nManipulations = @model.nAnswer().get('manipulations')
 
 
-    nManipulations['income tax'] = @$el.find('#answer-no-skill1').val()
-    nManipulations['education level'] = @$el.find('#answer-no-skill2').val()
-    nManipulations['public health'] = @$el.find('#answer-no-skill3').val()
-    nManipulations['entrepreneurship'] = @$el.find('#answer-no-skill4').val()
-    nManipulations['community art'] = @$el.find('#answer-no-skill5').val()
-    nManipulations['immigration'] = @$el.find('#answer-no-skill6').val()
+    nManipulations['income tax'] = parseInt @$el.find('#answer-no-skill1').val()
+    nManipulations['education level'] = parseInt @$el.find('#answer-no-skill2').val()
+    nManipulations['public health'] = parseInt @$el.find('#answer-no-skill3').val()
+    nManipulations['entrepreneurship'] = parseInt @$el.find('#answer-no-skill4').val()
+    nManipulations['community art'] = parseInt @$el.find('#answer-no-skill5').val()
+    nManipulations['immigration'] = parseInt @$el.find('#answer-no-skill6').val()
 
     @model.nAnswer().set(manipulations: nManipulations)
     @model.nAnswer().save()
@@ -229,7 +229,7 @@ class @AdminRouter extends Backbone.Router
   
   _adminView: -> @__adminview ||= new AdminView()
   _questionView: (id) ->
-    list = new QuestionList()
+    list = all_questions
     list.fetch()
 
     if q = list.get(id)

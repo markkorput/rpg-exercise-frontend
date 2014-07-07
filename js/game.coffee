@@ -4,9 +4,7 @@
 class @GameView extends Backbone.View
   initialize: ->
     # init logic
-    games = new GameList()
-    # games.fetch()
-    @game = games.create({}) # if games.length < 1
+    @game = new Game()
 
     @game_states = new Backbone.Collection([@getCurrentState()])
 
@@ -42,11 +40,11 @@ class @GameView extends Backbone.View
     @game.on 'new-question', ((question) -> @game_visuals.showQuestion(question) ), this 
 
     @on 'answer', =>
-      @game.save()
+      # @game.save()
       # console.log @game.user
-      @game.user.save()
+      # @game.user.save()
 
-    all_questions.fetchOrInit()
+
     @game.nextQuestion()
 
   # helpers
