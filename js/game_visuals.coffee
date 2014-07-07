@@ -69,6 +69,19 @@ class QuestionVisual extends Backbone.View
     # start out of screen
     @moveTo @topPosition()
 
+    Hammer(document).on 'drag', (e) =>
+      pos = @currentPosition()
+      pos.x = parseFloat(pos.x) + e.gesture.deltaX/10
+      @moveTo pos
+
+    Hammer(document).on 'dragend', (e) =>
+      if e.gesture.deltaX < -150
+        @trigger 'answer-yes' 
+      else if e.gesture.deltaX > 150
+        @trigger 'answer-no'
+      else
+        @moveTo @centerPosition()
+
   clickYes: -> @trigger 'answer-yes'
   clickNo: -> @trigger 'answer-no'
 

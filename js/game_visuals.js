@@ -100,10 +100,26 @@
     };
 
     QuestionVisual.prototype.initialize = function() {
+      var _this = this;
       this.$el.append($('<span class="question"></span>'));
       this.$el.append($('<a href="#" class="yes button"><span>&larr; &nbsp; &nbsp; Yes</span></a>'));
       this.$el.append($('<a href="#" class="no button"><span>No &nbsp; &nbsp; &rarr;</span></a>'));
-      return this.moveTo(this.topPosition());
+      this.moveTo(this.topPosition());
+      Hammer(document).on('drag', function(e) {
+        var pos;
+        pos = _this.currentPosition();
+        pos.x = parseFloat(pos.x) + e.gesture.deltaX / 10;
+        return _this.moveTo(pos);
+      });
+      return Hammer(document).on('dragend', function(e) {
+        if (e.gesture.deltaX < -150) {
+          return _this.trigger('answer-yes');
+        } else if (e.gesture.deltaX > 150) {
+          return _this.trigger('answer-no');
+        } else {
+          return _this.moveTo(_this.centerPosition());
+        }
+      });
     };
 
     QuestionVisual.prototype.clickYes = function() {
