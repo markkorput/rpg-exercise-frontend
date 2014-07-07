@@ -10,13 +10,13 @@
     opacity: 0.8;
     color: white;
     text-align: center;
-    font-family: bebas, 'Open Sans Condensed', sans-serif, arial, georgia;
+    font-family: 'Open Sans Condensed', sans-serif, arial, georgia;
     font-size: xx-large;
     overflow:hidden;
     border-radius: 15px;
 }
 
-.game-question .question{display: block; margin-top:40px; position:absolute;}
+.game-question .question{display: block; margin:40px 20px 40px 20px; position:absolute;}
 .game-question a.button{
     display:inline-block;
     font-size: x-large;
