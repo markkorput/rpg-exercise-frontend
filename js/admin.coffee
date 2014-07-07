@@ -220,9 +220,6 @@ class UserView extends Backbone.View
     @$el.append 'Name: '+@model.get('name')+'<br/>'
     @$el.append 'Skills: '+@model.get('skillSummary')
 
-
-
-
 class @AdminRouter extends Backbone.Router
   routes:
     "question/:id": 'showQuestion'
@@ -242,7 +239,6 @@ class @AdminRouter extends Backbone.Router
     return null
 
   newQuestion: ->
-    console.log 'newww'
     q = all_questions.createEmptyQuestion()
     @navigate('#/question/'+q.id)
 

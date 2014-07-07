@@ -399,7 +399,6 @@
 
     AdminRouter.prototype.newQuestion = function() {
       var q;
-      console.log('newww');
       q = all_questions.createEmptyQuestion();
       return this.navigate('#/question/' + q.id);
     };
