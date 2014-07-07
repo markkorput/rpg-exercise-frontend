@@ -13,8 +13,7 @@
     }
 
     GameView.prototype.initialize = function() {
-      var no_func, yes_func,
-        _this = this;
+      var no_func, yes_func;
       this.game = new Game();
       this.game_states = new Backbone.Collection([this.getCurrentState()]);
       this.render();
@@ -55,7 +54,7 @@
       this.game.on('new-question', (function(question) {
         return this.game_visuals.showQuestion(question);
       }), this);
-      this.on('answer', function() {});
+      all_questions.fetchOrInit();
       return this.game.nextQuestion();
     };
 

@@ -39,12 +39,7 @@ class @GameView extends Backbone.View
     @game.submissions.on 'add', (-> @game_states.add([@getCurrentState()])), this
     @game.on 'new-question', ((question) -> @game_visuals.showQuestion(question) ), this 
 
-    @on 'answer', =>
-      # @game.save()
-      # console.log @game.user
-      # @game.user.save()
-
-
+    all_questions.fetchOrInit()
     @game.nextQuestion()
 
   # helpers
