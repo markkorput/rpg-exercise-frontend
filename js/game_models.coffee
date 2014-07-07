@@ -1,7 +1,7 @@
 #
 # Question
 #
-class @Answer extends Backbone.Model
+class @Answer extends Backbone.RelationalModel
   defaults:
     text: 'Yes'
     manipulations:
@@ -12,8 +12,9 @@ class @Answer extends Backbone.Model
       'community art': 0
       'immigration': 0
 
+Answer.setup()
 
-class @Question extends Backbone.Model
+class @Question extends Backbone.RelationalModel
   defaults:
     text: 'Question Text'
     answers: [
@@ -21,9 +22,87 @@ class @Question extends Backbone.Model
       new Answer(text: 'No')
     ]
 
+  relations: [
+    {
+      type: Backbone.HasMany,
+      key: 'answers',
+      relatedModel: 'Answer',
+      reverseRelation: {
+        type: Backbone.HasOne,
+        key: 'question'
+      }
+    }
+  ]
+
+
+# needed for backbone-relationships because coffeescript handles inheritance a bit different
+Question.setup()
+
+
 class @QuestionList extends Backbone.Collection
   model: Question
-  localStorage: new Backbone.LocalStorage("rpg-backbone-storage")
+  localStorage: new Backbone.LocalStorage("rpg-backbone-storage-questions")
+
+  fetchOrInit: ->
+    @fetch()
+    @each (q) -> q.destroy()
+    @_init() if @length == 0
+
+  _init: ->
+    _.each @_initData(), (qData) =>
+      @create(qData)
+
+  _initData: ->
+    [
+      {
+        text: 'Should we build more schools?'
+        answers: [
+          {
+            text: 'Yes'
+            manipulations:
+              'income tax': 5
+              'education level': 3
+              'public health': 2
+              'entrepreneurship': 3
+              'community art': -3
+              'immigration': 0
+          },{
+            text: 'No'
+            manipulations:
+              'income tax': -3
+              'education level': -4
+              'public health': -5
+              'entrepreneurship': -1
+              'community art': +4
+              'immigration': 0
+          }
+        ]
+      },
+      {
+        text: 'Should we let foreigners work in the USA?'
+        answers: [
+          {
+            text: 'Yes'
+            manipulations:
+              'income tax': -3
+              'education level': 1
+              'public health': 1
+              'entrepreneurship': 3
+              'community art': 2
+              'immigration': 5
+          },{
+            text: 'No'
+            manipulations:
+              'income tax': 2
+              'education level': -1
+              'public health': -1
+              'entrepreneurship': -3
+              'community art': -2
+              'immigration': -4
+          }
+        ]
+      }
+    ]
 
 
 class @User extends Backbone.Model
@@ -50,14 +129,14 @@ class @User extends Backbone.Model
 
 class @UserList extends Backbone.Collection
   model: User
-  localStorage: new Backbone.LocalStorage("rpg-backbone-storage")
+  localStorage: new Backbone.LocalStorage("rpg-backbone-storage-users")
 
 
 class @Submission extends Backbone.Model
 
 class @SubmissionList extends Backbone.Collection
   model: Submission
-  localStorage: new Backbone.LocalStorage("rpg-backbone-storage")
+  localStorage: new Backbone.LocalStorage("rpg-backbone-storage-submissions")
 
 class @Game extends Backbone.Model
   defaults: { created_at: new Date() }
@@ -72,8 +151,9 @@ class @Game extends Backbone.Model
       @set(user_id: @user.id)
 
     @submissions = new SubmissionList()
-    @questions = new QuestionList(@_questionData())
-    # @questions.fetch();
+    qList = new QuestionList()
+    @questions = new QuestionList()
+    @questions.fetchOrInit()
 
   # returns the current question object
   current_question: ->
@@ -93,64 +173,21 @@ class @Game extends Backbone.Model
 
   # just sets the current_question_id to a new value
   nextQuestion: ->
-    @set(current_question_id: @questions.sample().cid)
+    # pick next question
+    q = @questions.sample()
+    # abort f no question was found
+    if !q
+      @trigger 'no-questions'
+      return
+    # set current question
+    @set(current_question_id: q.cid)
     # let anybody hook into this event
     @trigger 'new-question', @current_question()
     # return the question object
     @current_question()
 
-  _questionData: ->
-    [
-      {
-        text: 'Should we build more schools?'
-        answers: [
-          new Answer
-            text: 'Yes'
-            manipulations:
-              'income tax': 5
-              'education level': 3
-              'public health': 2
-              'entrepreneurship': 3
-              'community art': -3
-              'immigration': 0
-          new Answer
-            text: 'No'
-            manipulations:
-              'income tax': -3
-              'education level': -4
-              'public health': -5
-              'entrepreneurship': -1
-              'community art': +4
-              'immigration': 0
-        ],
-      },
-      {
-        text: 'Should we let foreigners work in the USA?'
-        answers: [
-          new Answer
-            text: 'Yes'
-            manipulations:
-              'income tax': -3
-              'education level': 1
-              'public health': 1
-              'entrepreneurship': 3
-              'community art': 2
-              'immigration': 5
-          new Answer
-            text: 'No'
-            manipulations:
-              'income tax': 2
-              'education level': -1
-              'public health': -1
-              'entrepreneurship': -3
-              'community art': -2
-              'immigration': -4
-        ]
-      }
-    ]
-
 class @GameList extends Backbone.Collection
   model: Game
-  localStorage: new Backbone.LocalStorage("rpg-backbone-storage")
+  localStorage: new Backbone.LocalStorage("rpg-backbone-storage-games")
 
     

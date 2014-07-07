@@ -26,7 +26,9 @@
 
     return Answer;
 
-  })(Backbone.Model);
+  })(Backbone.RelationalModel);
+
+  Answer.setup();
 
   this.Question = (function(_super) {
     __extends(Question, _super);
@@ -45,9 +47,23 @@
       ]
     };
 
+    Question.prototype.relations = [
+      {
+        type: Backbone.HasMany,
+        key: 'answers',
+        relatedModel: 'Answer',
+        reverseRelation: {
+          type: Backbone.HasOne,
+          key: 'question'
+        }
+      }
+    ];
+
     return Question;
 
-  })(Backbone.Model);
+  })(Backbone.RelationalModel);
+
+  Question.setup();
 
   this.QuestionList = (function(_super) {
     __extends(QuestionList, _super);
@@ -59,7 +75,80 @@
 
     QuestionList.prototype.model = Question;
 
-    QuestionList.prototype.localStorage = new Backbone.LocalStorage("rpg-backbone-storage");
+    QuestionList.prototype.localStorage = new Backbone.LocalStorage("rpg-backbone-storage-questions");
+
+    QuestionList.prototype.fetchOrInit = function() {
+      this.fetch();
+      this.each(function(q) {
+        return q.destroy();
+      });
+      if (this.length === 0) {
+        return this._init();
+      }
+    };
+
+    QuestionList.prototype._init = function() {
+      var _this = this;
+      return _.each(this._initData(), function(qData) {
+        return _this.create(qData);
+      });
+    };
+
+    QuestionList.prototype._initData = function() {
+      return [
+        {
+          text: 'Should we build more schools?',
+          answers: [
+            {
+              text: 'Yes',
+              manipulations: {
+                'income tax': 5,
+                'education level': 3,
+                'public health': 2,
+                'entrepreneurship': 3,
+                'community art': -3,
+                'immigration': 0
+              }
+            }, {
+              text: 'No',
+              manipulations: {
+                'income tax': -3,
+                'education level': -4,
+                'public health': -5,
+                'entrepreneurship': -1,
+                'community art': +4,
+                'immigration': 0
+              }
+            }
+          ]
+        }, {
+          text: 'Should we let foreigners work in the USA?',
+          answers: [
+            {
+              text: 'Yes',
+              manipulations: {
+                'income tax': -3,
+                'education level': 1,
+                'public health': 1,
+                'entrepreneurship': 3,
+                'community art': 2,
+                'immigration': 5
+              }
+            }, {
+              text: 'No',
+              manipulations: {
+                'income tax': 2,
+                'education level': -1,
+                'public health': -1,
+                'entrepreneurship': -3,
+                'community art': -2,
+                'immigration': -4
+              }
+            }
+          ]
+        }
+      ];
+    };
 
     return QuestionList;
 
@@ -134,7 +223,7 @@
 
     UserList.prototype.model = User;
 
-    UserList.prototype.localStorage = new Backbone.LocalStorage("rpg-backbone-storage");
+    UserList.prototype.localStorage = new Backbone.LocalStorage("rpg-backbone-storage-users");
 
     return UserList;
 
@@ -162,7 +251,7 @@
 
     SubmissionList.prototype.model = Submission;
 
-    SubmissionList.prototype.localStorage = new Backbone.LocalStorage("rpg-backbone-storage");
+    SubmissionList.prototype.localStorage = new Backbone.LocalStorage("rpg-backbone-storage-submissions");
 
     return SubmissionList;
 
@@ -181,7 +270,7 @@
     };
 
     Game.prototype.initialize = function() {
-      var uList;
+      var qList, uList;
       uList = new UserList();
       if (this.get('user_id')) {
         this.user = uList.get(this.get('user_id'));
@@ -193,7 +282,9 @@
         });
       }
       this.submissions = new SubmissionList();
-      return this.questions = new QuestionList(this._questionData());
+      qList = new QuestionList();
+      this.questions = new QuestionList();
+      return this.questions.fetchOrInit();
     };
 
     Game.prototype.current_question = function() {
@@ -224,67 +315,17 @@
     };
 
     Game.prototype.nextQuestion = function() {
+      var q;
+      q = this.questions.sample();
+      if (!q) {
+        this.trigger('no-questions');
+        return;
+      }
       this.set({
-        current_question_id: this.questions.sample().cid
+        current_question_id: q.cid
       });
       this.trigger('new-question', this.current_question());
       return this.current_question();
-    };
-
-    Game.prototype._questionData = function() {
-      return [
-        {
-          text: 'Should we build more schools?',
-          answers: [
-            new Answer({
-              text: 'Yes',
-              manipulations: {
-                'income tax': 5,
-                'education level': 3,
-                'public health': 2,
-                'entrepreneurship': 3,
-                'community art': -3,
-                'immigration': 0
-              }
-            }), new Answer({
-              text: 'No',
-              manipulations: {
-                'income tax': -3,
-                'education level': -4,
-                'public health': -5,
-                'entrepreneurship': -1,
-                'community art': +4,
-                'immigration': 0
-              }
-            })
-          ]
-        }, {
-          text: 'Should we let foreigners work in the USA?',
-          answers: [
-            new Answer({
-              text: 'Yes',
-              manipulations: {
-                'income tax': -3,
-                'education level': 1,
-                'public health': 1,
-                'entrepreneurship': 3,
-                'community art': 2,
-                'immigration': 5
-              }
-            }), new Answer({
-              text: 'No',
-              manipulations: {
-                'income tax': 2,
-                'education level': -1,
-                'public health': -1,
-                'entrepreneurship': -3,
-                'community art': -2,
-                'immigration': -4
-              }
-            })
-          ]
-        }
-      ];
     };
 
     return Game;
@@ -301,7 +342,7 @@
 
     GameList.prototype.model = Game;
 
-    GameList.prototype.localStorage = new Backbone.LocalStorage("rpg-backbone-storage");
+    GameList.prototype.localStorage = new Backbone.LocalStorage("rpg-backbone-storage-games");
 
     return GameList;
 
