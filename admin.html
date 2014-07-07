@@ -6,15 +6,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>RPG Game Admin</title>
         <link rel="stylesheet" href="css/game.css">
-        <link rel="stylesheet" href="css/bootstrap-responsive.css" media="screen">
+        <link rel="stylesheet" href="css/bootstrap.css" media="screen">
         <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:700' rel='stylesheet' type='text/css'> -->
         <script src="js/third_party/jquery/jquery.js"></script>
         <script src="js/third_party/underscore/underscore.js"></script>
         <script src="js/third_party/backbone/backbone.js"></script>
         <script src="js/third_party/backbone/backbone.localStorage.js"></script>
+        <script src="js/third_party/backbone/backbone-relational.js"></script>
         <script src="js/third_party/easeljs/tween.js"></script>
         <script src="js/third_party/twojs/two.js"></script>
         <script src="js/third_party/hammer.js"></script>
+        <script src="js/third_party/bootstrap.js"></script>
         <script src="js/game_ui.js"></script>
         <script src="js/game_visuals.js"></script>
         <script src="js/game_models.js"></script>
@@ -27,8 +29,83 @@
         </div>
         <script>
             $(document).ready(function(){
-                window.admin_view = new AdminView({el: $('#admin')});
+                window.router = new AdminRouter();
+                // Start Backbone history a necessary step for bookmarkable URL's
+                Backbone.history.start();
             });
         </script>
+
+        <script type="text/template" id="question-form">
+            <h1>Edit Question</h1>
+            <form class="form-horizontal">
+              <div class="control-group">
+                <label class="control-label" for="question-text">Question</label>
+                <div class="controls">
+                  <input type="text" id="question-text" placeholder="Question Text">
+                </div>
+              </div>
+              <div class="control-group" id="yes-answer-group">
+
+                <h2>Answer: 'Yes'</h2>
+                <label class="control-label" for="answer-yes-skill1">income tax</label>
+                <div class="controls">
+                  <input type="text" id="answer-yes-skill1" placeholder="Amount">
+                </div>
+                <label class="control-label" for="answer-yes-skill2">education level</label>
+                <div class="controls">
+                  <input type="text" id="answer-yes-skill2" placeholder="Amount">
+                </div>
+                <label class="control-label" for="answer-yes-skill3">public health</label>
+                <div class="controls">
+                  <input type="text" id="answer-yes-skill3" placeholder="Amount">
+                </div>
+                <label class="control-label" for="answer-yes-skill4">entrepreneurship</label>
+                <div class="controls">
+                  <input type="text" id="answer-yes-skill4" placeholder="Amount">
+                </div>
+                <label class="control-label" for="answer-yes-skill5">community art</label>
+                <div class="controls">
+                  <input type="text" id="answer-yes-skill5" placeholder="Amount">
+                </div>
+                <label class="control-label" for="answer-yes-skill6">immigration</label>
+                <div class="controls">
+                  <input type="text" id="answer-yes-skill6" placeholder="Amount">
+                </div>
+
+                <h2>Answer: 'No'</h3>
+                <label class="control-label" for="answer-no-skill1">income tax</label>
+                <div class="controls">
+                  <input type="text" id="answer-no-skill1" placeholder="Amount">
+                </div>
+                <label class="control-label" for="answer-no-skill2">education level</label>
+                <div class="controls">
+                  <input type="text" id="answer-no-skill2" placeholder="Amount">
+                </div>
+                <label class="control-label" for="answer-no-skill3">public health</label>
+                <div class="controls">
+                  <input type="text" id="answer-no-skill3" placeholder="Amount">
+                </div>
+                <label class="control-label" for="answer-no-skill4">entrepreneurship</label>
+                <div class="controls">
+                  <input type="text" id="answer-no-skill4" placeholder="Amount">
+                </div>
+                <label class="control-label" for="answer-no-skill5">community art</label>
+                <div class="controls">
+                  <input type="text" id="answer-no-skill5" placeholder="Amount">
+                </div>
+                <label class="control-label" for="answer-no-skill6">immigration</label>
+                <div class="controls">
+                  <input type="text" id="answer-no-skill6" placeholder="Amount">
+                </div>
+              </div>
+              <div class="control-group">
+                <div class="controls">
+                  <button type="submit" class="btn save">Save</button>
+                  <a href="#" class="btn">cancel</a>
+                </div>
+              </div>
+            </form>
+        </script>
+
     </body>
 </html>

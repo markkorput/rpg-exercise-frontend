@@ -14,6 +14,11 @@ class @Answer extends Backbone.RelationalModel
 
 Answer.setup()
 
+class @AnswerList extends Backbone.Collection
+  model: Answer
+  localStorage: new Backbone.LocalStorage("rpg-backbone-storage-answers")
+
+
 class @Question extends Backbone.RelationalModel
   defaults:
     text: 'Question Text'
@@ -27,6 +32,7 @@ class @Question extends Backbone.RelationalModel
       type: Backbone.HasMany,
       key: 'answers',
       relatedModel: 'Answer',
+      collectionType: 'AnswerList'
       reverseRelation: {
         type: Backbone.HasOne,
         key: 'question'
@@ -34,6 +40,11 @@ class @Question extends Backbone.RelationalModel
     }
   ]
 
+  getAnswer: (text) ->
+    @get('answers').findWhere(text: text)
+
+  yAnswer: ->@getAnswer('Yes')
+  nAnswer: -> @getAnswer('No')
 
 # needed for backbone-relationships because coffeescript handles inheritance a bit different
 Question.setup()
@@ -45,64 +56,62 @@ class @QuestionList extends Backbone.Collection
 
   fetchOrInit: ->
     @fetch()
-    @each (q) -> q.destroy()
-    @_init() if @length == 0
+    @_createDefaultQuestions() if @length == 0
 
-  _init: ->
-    _.each @_initData(), (qData) =>
+  _createDefaultQuestions: ->
+    _.each @_initData, (qData) =>
       @create(qData)
 
-  _initData: ->
-    [
-      {
-        text: 'Should we build more schools?'
-        answers: [
-          {
-            text: 'Yes'
-            manipulations:
-              'income tax': 5
-              'education level': 3
-              'public health': 2
-              'entrepreneurship': 3
-              'community art': -3
-              'immigration': 0
-          },{
-            text: 'No'
-            manipulations:
-              'income tax': -3
-              'education level': -4
-              'public health': -5
-              'entrepreneurship': -1
-              'community art': +4
-              'immigration': 0
-          }
-        ]
-      },
-      {
-        text: 'Should we let foreigners work in the USA?'
-        answers: [
-          {
-            text: 'Yes'
-            manipulations:
-              'income tax': -3
-              'education level': 1
-              'public health': 1
-              'entrepreneurship': 3
-              'community art': 2
-              'immigration': 5
-          },{
-            text: 'No'
-            manipulations:
-              'income tax': 2
-              'education level': -1
-              'public health': -1
-              'entrepreneurship': -3
-              'community art': -2
-              'immigration': -4
-          }
-        ]
-      }
-    ]
+  _initData: [
+    {
+      text: 'Should we build more schools?'
+      answers: [
+        {
+          text: 'Yes'
+          manipulations:
+            'income tax': 5
+            'education level': 3
+            'public health': 2
+            'entrepreneurship': 3
+            'community art': -3
+            'immigration': 0
+        },{
+          text: 'No'
+          manipulations:
+            'income tax': -3
+            'education level': -4
+            'public health': -5
+            'entrepreneurship': -1
+            'community art': +4
+            'immigration': 0
+        }
+      ]
+    },
+    {
+      text: 'Should we let foreigners work in the USA?'
+      answers: [
+        {
+          text: 'Yes'
+          manipulations:
+            'income tax': -3
+            'education level': 1
+            'public health': 1
+            'entrepreneurship': 3
+            'community art': 2
+            'immigration': 5
+        },{
+          text: 'No'
+          manipulations:
+            'income tax': 2
+            'education level': -1
+            'public health': -1
+            'entrepreneurship': -3
+            'community art': -2
+            'immigration': -4
+        }
+      ]
+    }
+  ]
 
 
 class @User extends Backbone.Model
