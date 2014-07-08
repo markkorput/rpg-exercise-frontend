@@ -208,9 +208,11 @@
       this.clr = _.sample(['#0e2a99', '#1f79aa', '#9edbfc', '#fffeff', '#f33060', '#d8245b']);
       this.group = this.two.makeGroup();
       this.group.translation.set(0, 0);
+      this.circleGroup = this.two.makeGroup();
+      this.circleGroup.translation.set(0, 0);
       this._initPolygons();
       this.game_states.on('add', this._growNewState, this);
-      this.visual_settings.on('change:animationRange', this._updateVertices, this);
+      this.visual_settings.on('change:animationRange', this._updateVerticalScale, this);
     }
 
     GraphLine.prototype._initPolygons = function() {
@@ -237,14 +239,18 @@
     };
 
     GraphLine.prototype._addLine = function(prevSkill, skill, index) {
-      var line, x1, x2;
+      var circle, line, x1, x2;
       x1 = (index - 1) * this.visual_settings.get('horizontalScale');
       x2 = x1 + this.visual_settings.get('horizontalScale');
       line = this.two.makeLine(x1, 0, x2, 0);
       line.stroke = this.clr;
       line.linewidth = this.visual_settings.get('lineFatness');
       line.addTo(this.group);
-      return this._updateVertices();
+      circle = this.two.makeCircle(x1, 0, this.visual_settings.get('lineFatness') * 1.2);
+      circle.addTo(this.circleGroup);
+      circle.fill = this.clr;
+      circle.noStroke();
+      return this._updateVerticalScale();
     };
 
     GraphLine.prototype._growNewState = function(newState) {
@@ -263,6 +269,16 @@
       });
     };
 
+    GraphLine.prototype._circlesPolygons = function() {
+      return _.map(this.circleGroup.children, function(poly, key, obj) {
+        return poly;
+      });
+    };
+
+    GraphLine.prototype._circleByStateIndex = function(idx) {
+      return this._circlesPolygons()[idx];
+    };
+
     GraphLine.prototype._verticesByStateIndex = function(idx) {
       var p, vertices;
       vertices = [];
@@ -277,14 +293,17 @@
       return vertices;
     };
 
-    GraphLine.prototype._updateVertices = function() {
+    GraphLine.prototype._updateVerticalScale = function() {
       var _this = this;
       return this.game_states.each(function(state, idx) {
-        var skill;
+        var circle, skill;
         if (skill = _this._skillFromState(state)) {
-          return _.each(_this._verticesByStateIndex(idx), function(vertice) {
+          _.each(_this._verticesByStateIndex(idx), function(vertice) {
             return vertice.y = _this.yForScore(skill.get('score'));
           });
+          if (circle = _this._circleByStateIndex(idx)) {
+            return circle.translation.y = _this.yForScore(skill.get('score'));
+          }
         }
       });
     };
@@ -322,6 +341,7 @@
             skill: skill
           });
           gl.group.addTo(_this.group);
+          gl.circleGroup.addTo(_this.group);
           return gl;
         });
       }

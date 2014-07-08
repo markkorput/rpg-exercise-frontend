@@ -134,11 +134,14 @@ class GraphLine extends Backbone.Model
     @group = @two.makeGroup()
     @group.translation.set(0, 0)
 
+    @circleGroup = @two.makeGroup()
+    @circleGroup.translation.set(0, 0)    
+
     @_initPolygons()
 
     # event hooks
     @game_states.on 'add', @_growNewState, this
-    @visual_settings.on 'change:animationRange', @_updateVertices, this
+    @visual_settings.on 'change:animationRange', @_updateVerticalScale, this
 
   _initPolygons: ->
     _.each _.range(1, @game_states.length - 1), (i) =>
@@ -160,7 +163,12 @@ class GraphLine extends Backbone.Model
     line.stroke = @clr
     line.linewidth = @visual_settings.get('lineFatness')
     line.addTo @group
-    @_updateVertices()
+    circle = @two.makeCircle(x1, 0, @visual_settings.get('lineFatness')*1.2)
+    circle.addTo @circleGroup
+    circle.fill = @clr
+    circle.noStroke()
+    # circle.noFill()
+    @_updateVerticalScale()
 
   _growNewState: (newState) ->
     # console.log "new score: "+@_skillFromState(newState).get('score')
@@ -171,6 +179,8 @@ class GraphLine extends Backbone.Model
     @visual_settings.scoreToScreenFactor(range) * score
 
   _linesPolygons: -> _.map @group.children, (poly,key,obj) -> poly
+  _circlesPolygons: -> _.map @circleGroup.children, (poly,key,obj) -> poly
+  _circleByStateIndex: (idx) -> @_circlesPolygons()[idx]
 
   _verticesByStateIndex: (idx) ->
     vertices = []
@@ -181,11 +191,13 @@ class GraphLine extends Backbone.Model
         vertices.push p.vertices[1]
     return vertices
 
-  _updateVertices: ->
+  _updateVerticalScale: ->
     @game_states.each (state, idx) =>
       if skill = @_skillFromState(state)
         _.each @_verticesByStateIndex(idx), (vertice) =>
           vertice.y = @yForScore(skill.get('score'))
+        if circle = @_circleByStateIndex(idx)
+          circle.translation.y = @yForScore(skill.get('score'))
 
 
 # the GaphLines class represent a collection of lines in the graph
@@ -208,6 +220,7 @@ class GraphLines extends Backbone.Model
       @graph_lines = @game_states.first().get('skills').map (skill) =>
         gl = new GraphLine(two: @two, game_states: @game_states, visual_settings: @visual_settings, skill: skill)
         gl.group.addTo @group
+        gl.circleGroup.addTo @group
         return gl
 
 
